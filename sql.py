@@ -1,24 +1,31 @@
 import sqlite3
-import datetime as datetime
 
-def connectDB(fileName):
-    return sqlite3.connect(fileName)
+class DBconnector:
 
-def closeDB(varConnection):
-    varConnection.close()
+    def __init__(self, fileName):
+        self.con = sqlite3.connect(fileName)
 
-def createTable(varConnection, tableName):
-    varQuery = f"CREATE TABLE IF NOT EXISTS {tableName} (dataKey INTEGER PRIMARY KEY, date TEXT NOT NULL, orderCount INTEGER DEFAULT 0);"
-    varConnection.execute(varQuery)
+    def closeDB(self):
+        self.con.close()
 
-def insertData(varConnection, tableName, varDate, orderCount):
-    varQuery = f"INSERT INTO {tableName} (date, orderCount) VALUES ('{varDate}', {orderCount});"
-    cur = varConnection.cursor()
-    cur.execute(varQuery) 
+    def createTable(self, tableName):
+        varQuery = f"CREATE TABLE IF NOT EXISTS {tableName} (ID INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT NOT NULL, orderCount INTEGER DEFAULT 0);"
+        self.con.execute(varQuery)
 
-def retrunData(varConnection, tableName, varDate):
-    varQuery = f"Select * from {tableName} WHERE date = '{varDate}';"
-    cur = varConnection.cursor()
-    cur.execute(varQuery) 
-    rows = cur.fetchall()
-    return rows
+    def insertData(self, tableName, varDate, orderCount):
+        varQuery = f"INSERT INTO {tableName} (date, orderCount) VALUES ('{varDate}', {orderCount});"
+        cur = self.con.cursor()
+        cur.execute(varQuery) 
+        self.con.commit()
+        return cur.fetchall()
+
+    def returnData(self, tableName, varDate):
+        varQuery = f"Select * from {tableName} where date = '{varDate}';"
+        cur = self.con.cursor()
+        cur.execute(varQuery) 
+        return cur.fetchall()
+
+    def AddHoc(self, sqlCode):
+        cur = self.con.cursor()
+        cur.execute(sqlCode)
+        return cur.fetchall()

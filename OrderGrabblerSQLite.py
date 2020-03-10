@@ -9,7 +9,10 @@ fileList = [r'\\tdwh-aplim-v1\e$\Logs\Erik\LSA\erikLog.txt', r'\\tdwh-arlim-v2\e
 date = datetime.datetime.now()
 dateString = date.strftime("%d%b%Y")
 
-varConn = sql.connectDB("ErikStats.db")
+varConn = sql.DBconnector("Erik.db")
+
+for x in exchangeList:
+    varConn.createTable(x)
 
 # If the debug argument is present, pring the debug info
 def debugPrint(PrintString):
@@ -69,8 +72,9 @@ if __name__ == "__main__":
             varPrintText, varUniqueCount = ReadLog(x, enum)
             print(varPrintText)
             print()
-            sql.insertData(varConn, exchangeList[enum], dateString, int(varUniqueCount))
-            
-    sql.closeDB(varConn)
+            varConn.insertData(exchangeList[enum], dateString, int(varUniqueCount))
+            print(varConn.returnData(exchangeList[enum], dateString))
+
+    varConn.closeDB()
 
     input("Press Enter to continue...")
